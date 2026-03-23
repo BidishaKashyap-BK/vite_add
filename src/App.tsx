@@ -19,6 +19,7 @@ function App() {
       const res = await fetch("http://localhost:4000/products")
       const rawData = await res.json()
       console.log("Products Data", rawData)
+     console.log("ui change")
       setProducts(rawData)
     }
 
