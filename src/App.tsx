@@ -6,25 +6,33 @@ import './App.css'
 
 type Product = {
   id: number
-  name: string
-  price: number
+  ptitle: string
+  mrp: number
 }
 
 function App() {
   const [count, setCount] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+
+  const limit = 10
+  const offset = (page - 1) * limit
 
   useEffect(() => {
     const getProducts = async () => {
-      const res = await fetch("http://localhost:4000/products")
+      const res = await fetch(`http://localhost:4000/products?offset=${offset}&limit=${limit}`)
       const rawData = await res.json()
       console.log("Products Data", rawData)
-     console.log("ui change")
-      setProducts(rawData)
+     
+      setProducts(rawData.products)
+      setTotal(rawData.total)
     }
 
     getProducts()
-  }, [])
+  }, [page])
+
+  const totalPages = Math.ceil(total / limit)
 
   return (
     <>
@@ -42,11 +50,31 @@ function App() {
             {products.map((product) => (
               <div key={product.id}>
                 <p>ID: {product.id}</p>
-                <p>NAME: {product.name}</p>
-                <p>PRICE: {product.price}</p>
+                <p>NAME: {product.ptitle}</p>
+                <p>PRICE: {product.mrp}</p>
                 <hr />
               </div>
             ))}
+          </div>
+
+          <div>
+            <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            >
+              Prev
+            </button>
+
+            <span style={{margin: "0 10px"}}>
+              Page {page} of {totalPages}
+            </span>
+
+            <button 
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+            >
+              Next
+            </button>
           </div>
          
           <p>
